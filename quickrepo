@@ -141,7 +141,7 @@ import_packages() {
     local reprepro_dir="$1"
     local repo_dir="$2"
     local codename="$3"
-    shift 4
+    shift 3
 
     local -a _reprepro
     _reprepro=(reprepro --basedir "$reprepro_dir" --outdir "$(realpath "$repo_dir")")
@@ -150,12 +150,12 @@ import_packages() {
     local file command
     for file in "$@"; do
         [[ "$file" = *.deb ]] && command="includedeb" || command="include"
-        "${_reprepro[@]}" $command "$codename" "$file"
+        "${_reprepro[@]}" --export=silent-never "$command" "$codename" "$file"
     done
+    "${_reprepro[@]}" export "$codename"
 
-    echo -e "\n--- Repository content ---"
+    echo "*** Repository content:"
     "${_reprepro[@]}" list "$codename"
-    echo
 }
 
 
