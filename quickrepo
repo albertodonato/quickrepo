@@ -1,0 +1,164 @@
+#!/bin/bash -e
+#
+# Build a debian repository for a set of packages from .changes files.
+#
+
+SCRIPT=$(basename "$0")
+
+# variables used by reprepro
+export REPREPRO_CONFIG_DIR
+export REPREPRO_BASE_DIR
+export GNUPGHOME
+
+# command-line option defaults
+OPT_ARCHES="source $(dpkg-architecture -q DEB_BUILD_ARCH)"
+OPT_ORIGIN="quickrepo"
+OPT_REPODIR="repo"
+OPT_CODENAME=$(lsb_release -cs)
+OPT_GPGKEY="default"
+OPT_VERBOSE=""
+declare -a OPT_FILES=()
+
+
+msg() {
+    echo "$SCRIPT - $*"
+}
+
+error_msg() {
+    msg "$@" >&2
+}
+
+error_exit() {
+    error_msg "$@"
+    exit 2
+}
+
+print_help() {
+    cat <<EOF
+Usage: $SCRIPT [options] <files...>
+
+ -a ARCHES     space-separated list of repository arches (default: "$OPT_ARCHES")
+ -c CODENAME   value for the repository "Codename" (default: "$OPT_CODENAME")
+ -d REPODIR    create the repository under REPODIR (default: "$OPT_REPODIR")
+ -g GPGKEY     fingerprint of GPG key to use to sign the repository
+               (default: default key from GPG config)
+ -h            print this help
+ -o ORIGIN     value for the repository "Origin" (default: "$OPT_ORIGIN")
+ -v            verbose operations
+EOF
+}
+
+
+parse_args() {
+    local optstring="a:c:d:g:ho:v"
+    local opt
+
+    while getopts "$optstring" opt; do
+        case "$opt" in
+            a)
+                OPT_ARCHES="$OPTARG"
+                ;;
+            c)
+                OPT_CODENAME="$OPTARG"
+                ;;
+            d)
+                OPT_REPODIR="$OPTARG"
+                ;;
+            g)
+                OPT_GPGKEY="$OPTARG"
+                ;;
+            h)
+                print_help
+                exit 1
+                ;;
+            o)
+                OPT_ORIGIN="$OPTARG"
+                ;;
+            v)
+                OPT_VERBOSE=true
+                ;;
+            *)
+                exit 1
+                ;;
+        esac
+    done
+
+    if [ "$OPTIND" -ge 2 ]; then
+        shift "$((OPTIND-1))"
+    fi
+    OPT_FILES+=("$@")
+}
+
+check_files() {
+    local file
+    for file in "$@"; do
+        if [ ! -r "$file" ]; then
+            error_exit "Can't read $file"
+        elif [[ "$file" != *.deb ]] && [[ "$file" != *.changes ]]; then
+            error_exit "Invalid file $file. must be a .deb or .changes"
+        fi
+    done
+}
+
+build_repo() {
+    local repo_dir="$1"
+    local arches="$2"
+    local origin="$3"
+    local codename="$4"
+    local gpgkey="$5"
+    shift 5
+
+    local reprepro_dir
+    reprepro_dir=$(mktemp -d)
+    rm -rf "$repo_dir"
+    mkdir -p "$repo_dir"
+
+    setup_reprepro "$reprepro_dir" "$arches" "$origin" "$codename" "$gpgkey"
+    import_packages "$reprepro_dir" "$repo_dir" "$codename" "$@"
+
+    rm -rf "$reprepro_dir"
+}
+
+setup_reprepro() {
+    local reprepro_dir="$1"
+    local arches="$2"
+    local origin="$3"
+    local codename="$4"
+    local signkey="$5"
+
+    mkdir -p "$reprepro_dir/conf"
+    cat >> "$reprepro_dir/conf/distributions" <<EOF
+Codename: $codename
+Architectures: $arches
+Origin: $origin
+Label: Test repository ($origin)
+Components: main
+SignWith: $signkey
+EOF
+}
+
+import_packages() {
+    local reprepro_dir="$1"
+    local repo_dir="$2"
+    local codename="$3"
+    shift 4
+
+    local -a _reprepro
+    _reprepro=(reprepro --basedir "$reprepro_dir" --outdir "$(realpath "$repo_dir")")
+    [ -z "$OPT_VERBOSE" ] || _reprepro+=("-VVV")
+
+    local file command
+    for file in "$@"; do
+        [[ "$file" = *.deb ]] && command="includedeb" || command="include"
+        "${_reprepro[@]}" $command "$codename" "$file"
+    done
+
+    echo -e "\n--- Repository content ---"
+    "${_reprepro[@]}" list "$codename"
+    echo
+}
+
+
+parse_args "$@"
+check_files "${OPT_FILES[@]}"
+build_repo "$OPT_REPODIR" "$OPT_ARCHES" "$OPT_ORIGIN" "$OPT_CODENAME" "$OPT_GPGKEY" "${OPT_FILES[@]}"
