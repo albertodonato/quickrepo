@@ -1,5 +1,7 @@
 # quickrepo
 
+[![Build status](https://img.shields.io/travis/albertodonato/quickrepo.svg)](https://travis-ci.com/albertodonato/quickrepo)
+
 This script provides a quick way to build a Debian repository from a set of `.deb` or `.changes` files.
 
 The resulting repository tree can be served via HTTP and added as a APT source.
@@ -9,8 +11,8 @@ The resulting repository tree can be served via HTTP and added as a APT source.
 `quickrepo` consists of a single script, which can be downloaded with
 
 ```bash
-curl -o quickrepo https://raw.githubusercontent.com/albertodonato/quickrepo/master/quickrepo
-chmod +x quickrepo
+    curl -o quickrepo https://raw.githubusercontent.com/albertodonato/quickrepo/master/quickrepo
+    chmod +x quickrepo
 ```
 
 ## Build a repository
@@ -18,7 +20,7 @@ chmod +x quickrepo
 The basic way to build a repository for a set of `.deb` is just to run
 
 ```bash
-./quickrepo *.deb
+    ./quickrepo *.deb
 ```
 
 This will create the `repo/` directory in the current path, import specified files, and export necessary release indexes.
