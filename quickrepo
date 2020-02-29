@@ -82,6 +82,7 @@ Usage: $SCRIPT [options] <files...>
  -h            print this help
  -o ORIGIN     value for the repository "Origin" (default: "$OPT_ORIGIN")
  -v            verbose operations
+
 EOF
     exit 1
 }
