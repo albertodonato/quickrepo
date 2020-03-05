@@ -1,6 +1,6 @@
 # quickrepo
 
-[![Build status](https://img.shields.io/travis/albertodonato/quickrepo.svg)](https://travis-ci.com/albertodonato/quickrepo)
+[![Build Status](https://travis-ci.com/albertodonato/quickrepo.svg?branch=master)](https://travis-ci.com/albertodonato/quickrepo)
 
 This script provides a quick way to build a Debian repository from a set of `.deb` or `.changes` files.
 
