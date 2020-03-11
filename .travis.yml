@@ -1,5 +1,3 @@
 language: bash
 os: linux
-services:
-  - docker
-script: docker run --rm -it -v $PWD/quickrepo:/quickrepo koalaman/shellcheck /quickrepo
+script: shellcheck quickrepo
