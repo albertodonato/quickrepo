@@ -19,7 +19,7 @@ error_exit() {
 }
 
 # command-line option defaults
-OPT_ARCHES="source $(dpkg-architecture -q DEB_BUILD_ARCH)"
+OPT_ARCHES="source $(dpkg --print-architecture)"
 OPT_ORIGIN="quickrepo"
 OPT_REPODIR="repo"
 OPT_CODENAME=$(lsb_release -cs)
@@ -92,14 +92,14 @@ is_deb_installed() {
 }
 
 check_deps() {
-    local -a deps=(dpkg-dev gpg lsb-release reprepro)
+    local -a deps=(gpg reprepro)
     local -a missing=()
     for dep in "${deps[@]}"; do
         is_deb_installed "$dep" || missing+=("$dep")
     done
 
     if [ "${#missing[@]}" -gt 0 ]; then
-        error_exit "Missing packages, please install them with:  sudo apt install ${missing[*]}"
+        error_exit "Missing packages, please install them with: sudo apt install ${missing[*]}"
     fi
 }
 
