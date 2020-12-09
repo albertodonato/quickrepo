@@ -1,3 +1,0 @@
-language: shell
-os: linux
-script: shellcheck quickrepo

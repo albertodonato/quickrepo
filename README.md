@@ -1,6 +1,6 @@
 # quickrepo
 
-[![Build Status](https://travis-ci.com/albertodonato/quickrepo.svg?branch=master)](https://travis-ci.com/albertodonato/quickrepo)
+[![GitHub Super-Linter](https://github.com/albertodonato/quickrepo/workflows/Lint/badge.svg)](https://github.com/albertodonato/quickrepo/actions?query=workflow%3ALint)
 
 This script provides a quick way to build a Debian repository from a set of
 `.deb` or `.changes` files.
