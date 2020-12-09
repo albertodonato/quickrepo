@@ -42,7 +42,7 @@ available, the desired one can be specified with the `-g GPGKEY` option.
 
 Available configuration options are as follows:
 
-```
+```text
 Usage: quickrepo [options] <files...>
 
  -a ARCHES     space-separated list of repository arches (default: "source amd64")
