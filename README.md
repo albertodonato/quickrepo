@@ -13,7 +13,7 @@ The resulting repository tree can be served via HTTP and added as a APT source.
 `quickrepo` consists of a single script, which can be downloaded with
 
 ```bash
-    curl -o quickrepo https://raw.githubusercontent.com/albertodonato/quickrepo/master/quickrepo
+    curl -o quickrepo https://raw.githubusercontent.com/albertodonato/quickrepo/main/quickrepo
     chmod +x quickrepo
 ```
 
