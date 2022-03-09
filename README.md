@@ -17,6 +17,18 @@ The resulting repository tree can be served via HTTP and added as a APT source.
     chmod +x quickrepo
 ```
 
+## Dependencies
+
+The script needs the `reprepro` and `gpg` applications.
+
+For a debian-based system, you can run
+
+```bash
+    sudo apt install reprepro gnupg
+```
+
+to install them.
+
 
 ## Build a repository
 
