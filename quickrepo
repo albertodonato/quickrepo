@@ -1,7 +1,9 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
 #
 # Build a debian repository for .deb or .changes files.
 #
+
+set -euo pipefail
 
 SCRIPT=$(basename "$0")
 
